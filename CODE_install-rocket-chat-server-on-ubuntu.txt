@@ -1,0 +1,53 @@
+
+	sudo apt install gnupg2 gnupg git unzip build-essential curl software-properties-common graphicsmagick gcc g++ make net-tools -y
+
+	wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+
+	# Ubuntu 20.04 / 22.04 LTS
+
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+	# Ubuntu 18.04 (Bionic)
+
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+	
+	echo "mongodb-org hold" | sudo dpkg --set-selections
+	echo "mongodb-org-database hold" | sudo dpkg --set-selections
+	echo "mongodb-org-server hold" | sudo dpkg --set-selections
+	echo "mongodb-org-shell hold" | sudo dpkg --set-selections
+	echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
+	echo "mongodb-org-tools hold" | sudo dpkg --set-selections
+
+	curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+
+	sudo npm install -g inherits n
+
+	curl -L https://releases.rocket.chat/latest/download -o /tmp/rocket.chat.tgz
+
+	tar -xzf /tmp/rocket.chat.tgz -C /tmp
+
+	sudo mv /tmp/bundle /opt/Rocket.Chat
+
+[Unit]
+Description=The Rocket.Chat server
+After=network.target remote-fs.target nss-lookup.target nginx.service mongod.service
+[Service]
+ExecStart=path_node /opt/Rocket.Chat/main.js
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=rocketchat
+User=rocketchat
+Environment=ROOT_URL=http://IP_SERVER-or_FQDN:3000
+Environment=PORT=3000
+Environment=MONGO_URL=mongodb://localhost:27017/rocketchat?replicaSet=rs01
+Environment=MONGO_OPLOG_URL=mongodb://localhost:27017/local?replicaSet=rs01
+[Install]
+WantedBy=multi-user.target
+
+	wiredTiger
+
+	replSetName: rs01
+
+
+	
+
